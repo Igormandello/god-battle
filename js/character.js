@@ -23,5 +23,23 @@ function Character(cx, cy, cw, ch, spriteSrc, loaded)
     this.hRatio = c.height / baseScreen.height
   }
   
+  this.move = (dir) =>
+  {
+    this.x += dir * 20
+    
+    if (!this.limits)
+    {
+      if (this.x < 0)
+        this.x = 0
+      else if (this.x + this.width > baseScreen.width)
+        this.x = baseScreen.width - this.width
+    }
+    else
+      if (this.x < this.limits.min)
+        this.x = 0
+      else if (this.x + this.width > this.limits.max)
+        this.x = baseScreen.width - this.width
+  }
+  
   this.resize()
 }

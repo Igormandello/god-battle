@@ -1,4 +1,8 @@
-var c, x, baseScreen = { width: 1920, height: 1080 }, characterSize = { width: 36, height: 48 };
+var Direction = { LEFT: -1, RIGHT: 1 },
+    baseScreen = { width: 1920, height: 1080 },
+    characterSize = { width: 36, height: 48 };
+
+var c, x;
 
 (function()
 {
@@ -46,6 +50,15 @@ var c, x, baseScreen = { width: 1920, height: 1080 }, characterSize = { width: 3
     scene.resize()
   }
 
+  window.onkeydown = (e) =>
+  {
+    switch (e.keyCode)
+    {
+      case 37: player.move(Direction.LEFT); break
+      case 39: player.move(Direction.RIGHT); break
+    }
+  }
+  
   function frame()
   {
     scene.render()
