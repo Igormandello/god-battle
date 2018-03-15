@@ -1,4 +1,4 @@
-var c, x;
+var c, x, baseScreen = { width: 1920, height: 1080 }, characterSize = { width: 36, height: 48 };
 
 (function()
 {
@@ -12,8 +12,7 @@ var c, x;
     c.width  = document.body.clientWidth
     c.height = document.body.clientHeight
 
-    player = new Character(200, 200, './imgs/player.png', function() { player.render() })
-    god    = new Character(200, 0, './imgs/god.png', function() { god.render() })
+    let toLoad = 3
     
     let objects =
     [
@@ -23,10 +22,18 @@ var c, x;
         src: './imgs/cloud.png'
       }
     ]
-    scene  = new Scene('./imgs/background.png', objects)
-    scene.resize()
+    scene  = new Scene('./imgs/background.png', objects, resourceLoaded)
     
-    requestAnimationFrame(frame)
+    god    = new Character(960 - characterSize.width, 220 - characterSize.height, characterSize.width, characterSize.height, './imgs/god.png', resourceLoaded)
+    player = new Character(960 - characterSize.width, 1000 - characterSize.height, characterSize.width, characterSize.height, './imgs/player.png', resourceLoaded)
+    
+    function resourceLoaded()
+    {
+      toLoad--
+      
+      if (!toLoad)
+        requestAnimationFrame(frame)
+    }
   }
   
   window.onresize = () =>
@@ -34,12 +41,17 @@ var c, x;
     c.width  = document.body.clientWidth
     c.height = document.body.clientHeight
     
+    player.resize()
+    god.resize()
     scene.resize()
   }
 
   function frame()
   {
     scene.render()
+    player.render()
+    god.render()
+    scene.renderElement(0)
     
     requestAnimationFrame(frame)
   }
