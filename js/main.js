@@ -24,18 +24,28 @@ var c, x;
       {
         x: 300,
         y: 200,
+        visible: true,
         src: './imgs/cloud.png'
       },
       {
         x: 0,
         y: 792,
+        visible: true,
         src: './imgs/ground.png'
       }
     ]
     
     let interactable =
     [
+      {
+        x: 1550,
+        y: 850,
+        visible: true,
+        action: Actions.pentagram,
+        src: './imgs/pentagram.png'
+      },
     ]
+    
     scene  = new Scene('./imgs/background.png', scenario, interactable, resourceLoaded)
     
     god    = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/god.png', resourceLoaded)
@@ -70,6 +80,7 @@ var c, x;
       case 39: playerMoving = Direction.RIGHT; break
       case 65: godMoving = Direction.LEFT; break
       case 68: godMoving = Direction.RIGHT; break
+      case 13: scene.interact({ x: player.x, y: player.y, width: characterProps.width, height: characterProps.height })
     }
   }
   
@@ -93,7 +104,7 @@ var c, x;
     scene.render()
     player.render()
     god.render()
-    scene.renderSceneObject(0)
+    scene.renderScenarioObject(0)
     
     if (playerMoving)
       player.move(playerMoving)
@@ -102,5 +113,14 @@ var c, x;
       god.move(godMoving)
     
     requestAnimationFrame(frame)
+  }
+  
+  var Actions =
+  {
+    pentagram: function()
+    {
+      scene.toggleInteractableObjectVisibility(0)
+      scene.changeBackground('./imgs/bloodyBackground.png')
+    }
   }
 })();

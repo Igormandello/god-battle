@@ -14,7 +14,7 @@ function Scene(backgroundSrc, scenario, objects, loaded)
     tempImg.src = obj.src
     tempImg.onload = imageLoaded
     
-    elements.push({ x: obj.x, y: obj.y, img: tempImg })
+    elements.push({ x: obj.x, y: obj.y, visible: obj.visible, img: tempImg })
   })
   this.scenario = elements
   
@@ -25,7 +25,7 @@ function Scene(backgroundSrc, scenario, objects, loaded)
     tempImg.src = obj.src
     tempImg.onload = imageLoaded
     
-    elements.push({ x: obj.x, y: obj.y, img: tempImg })
+    elements.push({ x: obj.x, y: obj.y, action: obj.action, visible: obj.visible, img: tempImg })
   })
   this.objects = elements
   
@@ -38,36 +38,75 @@ function Scene(backgroundSrc, scenario, objects, loaded)
       loaded()
   }
   
-  this.render = () =>
-  {
-    //Draw the background
-    x.drawImage(this.background, 0, 0)
-    
-    //Draw the scenario
-    this.scenario.forEach((obj) =>
-    {
-      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
-    })
-    
-    //Draw the interactable objects
-    this.objects.forEach((obj) =>
-    {
-      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
-    })
-  }
-  
-  this.renderSceneObject = (i) =>
-  {
-    let obj = this.scenario[i]
-    if (obj)
-      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
-  }
-    
-  this.resize = () =>
-  {
-    this.wRatio = c.width / baseScreen.width,
-    this.hRatio = c.height / baseScreen.height
-  }
-  
   this.resize()
+}
+
+Scene.prototype.render = function()
+{
+  //Draw the background
+  x.drawImage(this.background, 0, 0)
+
+  //Draw the scenario
+  this.scenario.forEach((obj, i) => this.renderScenarioObject(i))
+
+  //Draw the interactable objects
+  this.objects.forEach((obj, i) => this.renderInteractableObject(i))
+}
+
+Scene.prototype.renderScenarioObject = function(i)
+{
+  let obj = this.scenario[i]
+  
+  if (obj)
+    if (obj.visible)
+      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
+}
+
+Scene.prototype.toggleScenarioObjectVisibility = function(i)
+{
+  let obj = this.scenario[i]
+  
+  if (obj)
+    obj.visible = !obj.visible;
+}
+
+Scene.prototype.renderInteractableObject = function(i)
+{
+  let obj = this.objects[i]
+  
+  if (obj)
+    if (obj.visible)
+      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
+}
+
+Scene.prototype.toggleInteractableObjectVisibility = function(i)
+{
+  let obj = this.objects[i]
+  
+  if (obj)
+    obj.visible = !obj.visible;
+}
+
+Scene.prototype.changeBackground = function(src, loaded)
+{
+  this.background = new Image()
+  this.background.src = src
+
+  if (loaded)
+    this.background.onload = loaded
+}
+
+Scene.prototype.interact = function(pos)
+{
+  this.objects.forEach((obj) => 
+  {
+    if (!(pos.x < obj.x || pos.y < obj.y || pos.y + pos.height > obj.y + obj.img.height || pos.x + pos.width > obj.x + obj.img.width))
+      obj.action();
+  })
+}
+
+Scene.prototype.resize = function()
+{
+  this.wRatio = c.width / baseScreen.width,
+  this.hRatio = c.height / baseScreen.height
 }
