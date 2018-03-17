@@ -1,11 +1,12 @@
 var Direction = { LEFT: -1, RIGHT: 1 },
     baseScreen = { width: 1920, height: 1080 },
-    characterSize = { width: 36, height: 48 };
+    characterProps = { width: 36, height: 48, speed: 10 };
 
 var c, x;
 
 (function()
 {
+  var playerMoving = 0, godMoving = 0;
   var player, god, scene;
 
   window.onload = () =>
@@ -18,18 +19,29 @@ var c, x;
 
     let toLoad = 3
     
-    let objects =
+    let scenario =
     [
       {
         x: 300,
         y: 200,
         src: './imgs/cloud.png'
+      },
+      {
+        x: 0,
+        y: 792,
+        src: './imgs/ground.png'
       }
     ]
-    scene  = new Scene('./imgs/background.png', objects, resourceLoaded)
     
-    god    = new Character(960 - characterSize.width, 220 - characterSize.height, characterSize.width, characterSize.height, './imgs/god.png', resourceLoaded)
-    player = new Character(960 - characterSize.width, 1000 - characterSize.height, characterSize.width, characterSize.height, './imgs/player.png', resourceLoaded)
+    let interactable =
+    [
+    ]
+    scene  = new Scene('./imgs/background.png', scenario, interactable, resourceLoaded)
+    
+    god    = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/god.png', resourceLoaded)
+    god.limits = { min: 300, max: baseScreen.width - 300 }
+    
+    player = new Character(960 - characterProps.width, 1000 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/player.png', resourceLoaded)
     
     function resourceLoaded()
     {
@@ -54,9 +66,26 @@ var c, x;
   {
     switch (e.keyCode)
     {
-      case 37: player.move(Direction.LEFT); break
-      case 39: player.move(Direction.RIGHT); break
+      case 37: playerMoving = Direction.LEFT; break
+      case 39: playerMoving = Direction.RIGHT; break
+      case 65: godMoving = Direction.LEFT; break
+      case 68: godMoving = Direction.RIGHT; break
     }
+  }
+  
+  window.onkeyup = (e) =>
+  {
+    if (playerMoving)
+      if (playerMoving == Direction.LEFT && e.keyCode == 37)
+        playerMoving = 0
+      else if (playerMoving == Direction.RIGHT && e.keyCode == 39)
+        playerMoving = 0
+    
+    if (godMoving)
+      if (godMoving == Direction.LEFT && e.keyCode == 65)
+        godMoving = 0
+      else if (godMoving == Direction.RIGHT && e.keyCode == 68)
+        godMoving = 0
   }
   
   function frame()
@@ -64,7 +93,13 @@ var c, x;
     scene.render()
     player.render()
     god.render()
-    scene.renderElement(0)
+    scene.renderSceneObject(0)
+    
+    if (playerMoving)
+      player.move(playerMoving)
+    
+    if (godMoving)
+      god.move(godMoving)
     
     requestAnimationFrame(frame)
   }

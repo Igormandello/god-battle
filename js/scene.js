@@ -1,4 +1,4 @@
-function Scene(backgroundSrc, objects, loaded)
+function Scene(backgroundSrc, scenario, objects, loaded)
 {
   this.wRatio = 1
   this.hRatio = 1
@@ -8,6 +8,17 @@ function Scene(backgroundSrc, objects, loaded)
   this.background.onload = imageLoaded
   
   let elements = []
+  scenario.forEach((obj, i, arr) =>
+  {
+    let tempImg = new Image()
+    tempImg.src = obj.src
+    tempImg.onload = imageLoaded
+    
+    elements.push({ x: obj.x, y: obj.y, img: tempImg })
+  })
+  this.scenario = elements
+  
+  elements = []
   objects.forEach((obj, i, arr) =>
   {
     let tempImg = new Image()
@@ -16,9 +27,10 @@ function Scene(backgroundSrc, objects, loaded)
     
     elements.push({ x: obj.x, y: obj.y, img: tempImg })
   })
-  this.elements = elements
+  this.objects = elements
   
-  let toLoad = 1 + elements.length
+  //Function to call loaded function when all of the resources were loaded
+  let toLoad = 1 + scenario.length + objects.length
   function imageLoaded()
   {
     toLoad--
@@ -31,17 +43,24 @@ function Scene(backgroundSrc, objects, loaded)
     //Draw the background
     x.drawImage(this.background, 0, 0)
     
-    //Draw the elements
-    this.elements.forEach((obj) =>
+    //Draw the scenario
+    this.scenario.forEach((obj) =>
+    {
+      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
+    })
+    
+    //Draw the interactable objects
+    this.objects.forEach((obj) =>
     {
       x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
     })
   }
   
-  this.renderElement = (i) =>
+  this.renderSceneObject = (i) =>
   {
-    let obj = this.elements[i]
-    x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
+    let obj = this.scenario[i]
+    if (obj)
+      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
   }
     
   this.resize = () =>

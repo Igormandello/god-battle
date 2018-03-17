@@ -1,10 +1,12 @@
-function Character(cx, cy, cw, ch, spriteSrc, loaded)
+function Character(cx, cy, cw, ch, speed, spriteSrc, loaded)
 {
   this.x = cx
   this.y = cy
   
   this.width  = cw
   this.height = ch
+  
+  this.speed = speed
   
   this.image = new Image()
   this.image.src = spriteSrc
@@ -25,7 +27,7 @@ function Character(cx, cy, cw, ch, spriteSrc, loaded)
   
   this.move = (dir) =>
   {
-    this.x += dir * 20
+    this.x += dir * this.speed
     
     if (!this.limits)
     {
@@ -36,9 +38,9 @@ function Character(cx, cy, cw, ch, spriteSrc, loaded)
     }
     else
       if (this.x < this.limits.min)
-        this.x = 0
+        this.x = this.limits.min
       else if (this.x + this.width > this.limits.max)
-        this.x = baseScreen.width - this.width
+        this.x = this.limits.max - this.width
   }
   
   this.resize()
