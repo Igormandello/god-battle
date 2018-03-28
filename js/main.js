@@ -1,8 +1,22 @@
 var Direction = { LEFT: -1, RIGHT: 1 },
     baseScreen = { width: 1920, height: 1080 },
-    characterProps = { width: 36, height: 48, speed: 10 };
+    characterProps = { width: 32, height: 55, speed: 7 };
 
 var c, x;
+
+function getClippedRegion(image, x, y, width, height)
+{
+  var canvas = document.createElement('canvas'),
+      ctx = canvas.getContext('2d');
+
+  canvas.width = width;
+  canvas.height = height;
+
+  //                   source region         dest. region
+  ctx.drawImage(image, x, y, width, height,  0, 0, width, height);
+  
+  return canvas;
+}
 
 (function()
 {
@@ -39,7 +53,7 @@ var c, x;
     [
       {
         x: 1550,
-        y: 850,
+        y: 820,
         visible: true,
         action: Actions.pentagram,
         src: './imgs/pentagram.png'
@@ -51,7 +65,7 @@ var c, x;
     god    = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/god.png', resourceLoaded)
     god.limits = { min: 300, max: baseScreen.width - 300 }
     
-    player = new Character(960 - characterProps.width, 1000 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/player.png', resourceLoaded)
+    player = new Character(960 - characterProps.width, 920 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/player.png', resourceLoaded)
     
     function resourceLoaded()
     {
@@ -76,27 +90,23 @@ var c, x;
   {
     switch (e.keyCode)
     {
-      case 37: playerMoving = Direction.LEFT; break
-      case 39: playerMoving = Direction.RIGHT; break
-      case 65: godMoving = Direction.LEFT; break
-      case 68: godMoving = Direction.RIGHT; break
+      case 37: player.startMoving(Direction.LEFT); break
+      case 39: player.startMoving(Direction.RIGHT); break
+      case 65: god.startMoving(Direction.LEFT); break
+      case 68: god.startMoving(Direction.RIGHT); break
       case 13: scene.interact({ x: player.x, y: player.y, width: characterProps.width, height: characterProps.height })
     }
   }
   
   window.onkeyup = (e) =>
   {
-    if (playerMoving)
-      if (playerMoving == Direction.LEFT && e.keyCode == 37)
-        playerMoving = 0
-      else if (playerMoving == Direction.RIGHT && e.keyCode == 39)
-        playerMoving = 0
-    
-    if (godMoving)
-      if (godMoving == Direction.LEFT && e.keyCode == 65)
-        godMoving = 0
-      else if (godMoving == Direction.RIGHT && e.keyCode == 68)
-        godMoving = 0
+    switch (e.keyCode)
+    {
+      case 37: player.stopMoving(Direction.LEFT); break
+      case 39: player.stopMoving(Direction.RIGHT); break
+      case 65: god.stopMoving(Direction.LEFT); break
+      case 68: god.stopMoving(Direction.RIGHT); break
+    }
   }
   
   function frame()
@@ -105,12 +115,6 @@ var c, x;
     player.render()
     god.render()
     scene.renderScenarioObject(0)
-    
-    if (playerMoving)
-      player.move(playerMoving)
-    
-    if (godMoving)
-      god.move(godMoving)
     
     requestAnimationFrame(frame)
   }
