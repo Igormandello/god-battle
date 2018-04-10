@@ -45,11 +45,6 @@ function Character(cx, cy, cw, ch, speed, spritesheet, loaded)
   this.moving = 0
   this.frameCount = 0
   this.lastDir = DIRECTION.left
-  
-  this.wRatio = 1
-  this.hRatio = 1
-  
-  this.resize()
 }
   
 Character.prototype.render = function()
@@ -60,7 +55,7 @@ Character.prototype.render = function()
     this.frameCount = 0
     
   let actualImg = (this.moving == 0 ? this.images[this.lastDir * 3] : this.images[SPRITE_SEQUENCE[this.lastDir][Math.floor(this.frameCount / SPRITE_CHANGE)]])
-  x.drawImage(actualImg, this.x * this.wRatio, this.y * this.hRatio, this.width * this.wRatio, this.height * this.hRatio)
+  x.drawImage(actualImg, this.x * ratios.W_RATIO, this.y * ratios.H_RATIO, this.width * ratios.W_RATIO, this.height * ratios.H_RATIO)
 }
 
 Character.prototype.startMoving = function(dir)
@@ -98,10 +93,4 @@ Character.prototype.stopMoving = function(dir)
     this.moving = 0
     
   this.frameCount = 0
-}
-
-Character.prototype.resize = function()
-{
-  this.wRatio = c.width / baseScreen.width
-  this.hRatio = c.height / baseScreen.height
 }

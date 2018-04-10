@@ -1,8 +1,5 @@
 function Scene(backgroundSrc, scenario, objects, loaded)
 {
-  this.wRatio = 1
-  this.hRatio = 1
-  
   this.background = new Image()
   this.background.src = backgroundSrc
   this.background.onload = imageLoaded
@@ -37,8 +34,6 @@ function Scene(backgroundSrc, scenario, objects, loaded)
     if (toLoad == 0)
       loaded()
   }
-  
-  this.resize()
 }
 
 Scene.prototype.render = function()
@@ -59,7 +54,7 @@ Scene.prototype.renderScenarioObject = function(i)
   
   if (obj)
     if (obj.visible)
-      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
+      x.drawImage(obj.img, obj.x * ratios.W_RATIO, obj.y * ratios.H_RATIO, obj.img.width * ratios.W_RATIO, obj.img.height * ratios.H_RATIO)
 }
 
 Scene.prototype.toggleScenarioObjectVisibility = function(i)
@@ -76,7 +71,7 @@ Scene.prototype.renderInteractableObject = function(i)
   
   if (obj)
     if (obj.visible)
-      x.drawImage(obj.img, obj.x * this.wRatio, obj.y * this.hRatio, obj.img.width * this.wRatio, obj.img.height * this.hRatio)
+      x.drawImage(obj.img, obj.x * ratios.W_RATIO, obj.y * ratios.H_RATIO, obj.img.width * ratios.W_RATIO, obj.img.height * ratios.H_RATIO)
 }
 
 Scene.prototype.toggleInteractableObjectVisibility = function(i)
@@ -103,10 +98,4 @@ Scene.prototype.interact = function(pos)
     if (!(pos.x < obj.x || pos.y < obj.y || pos.y + pos.height > obj.y + obj.img.height || pos.x + pos.width > obj.x + obj.img.width))
       obj.action();
   })
-}
-
-Scene.prototype.resize = function()
-{
-  this.wRatio = c.width / baseScreen.width,
-  this.hRatio = c.height / baseScreen.height
 }

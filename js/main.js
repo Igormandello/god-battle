@@ -1,6 +1,7 @@
 var Direction = { LEFT: -1, RIGHT: 1 },
+    ratios = { W_RATIO: 1, H_RATIO: 1 },
     baseScreen = { width: 1920, height: 1080 },
-    characterProps = { width: 32, height: 55, speed: 7 };
+    characterProps = { width: 46, height: 79, speed: 7 };
 
 var c, x;
 
@@ -30,6 +31,9 @@ function getClippedRegion(image, x, y, width, height)
 
     c.width  = document.body.clientWidth
     c.height = document.body.clientHeight
+    
+    ratios.W_RATIO = document.body.clientWidth  / baseScreen.width
+    ratios.H_RATIO = document.body.clientHeight / baseScreen.height
 
     let toLoad = 3
     
@@ -81,9 +85,8 @@ function getClippedRegion(image, x, y, width, height)
     c.width  = document.body.clientWidth
     c.height = document.body.clientHeight
     
-    player.resize()
-    god.resize()
-    scene.resize()
+    ratios.W_RATIO = document.body.clientWidth  / baseScreen.width
+    ratios.H_RATIO = document.body.clientHeight / baseScreen.height
   }
 
   window.onkeydown = (e) =>
