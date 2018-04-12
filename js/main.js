@@ -22,7 +22,7 @@ function getClippedRegion(image, x, y, width, height)
 (function()
 {
   var playerMoving = 0, godMoving = 0;
-  var player, god, scene;
+  var player, god, scene, shotManager;
 
   window.onload = () =>
   {
@@ -35,7 +35,7 @@ function getClippedRegion(image, x, y, width, height)
     ratios.W_RATIO = document.body.clientWidth  / baseScreen.width
     ratios.H_RATIO = document.body.clientHeight / baseScreen.height
 
-    let toLoad = 3
+    let toLoad = 4
     
     let scenario =
     [
@@ -65,6 +65,7 @@ function getClippedRegion(image, x, y, width, height)
     ]
     
     scene  = new Scene('./imgs/background.png', scenario, interactable, resourceLoaded)
+    shotManager = new ShotManager('./imgs/lightning.png', resourceLoaded) 
     
     god    = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/god.png', resourceLoaded)
     god.limits = { min: 300, max: baseScreen.width - 300 }
@@ -93,6 +94,7 @@ function getClippedRegion(image, x, y, width, height)
   {
     switch (e.keyCode)
     {
+      case 32: shotManager.sendShot({ x: god.x, y: god.y }, 3 / 2 * Math.PI, 7); break
       case 37: player.startMoving(Direction.LEFT); break
       case 39: player.startMoving(Direction.RIGHT); break
       case 65: god.startMoving(Direction.LEFT); break
@@ -114,9 +116,12 @@ function getClippedRegion(image, x, y, width, height)
   
   function frame()
   {
+    shotManager.update()
+    
     scene.render()
     player.render()
     god.render()
+    shotManager.render()
     scene.renderScenarioObject(0)
     
     requestAnimationFrame(frame)

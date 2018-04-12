@@ -1,0 +1,37 @@
+function ShotManager(imageSrc, loaded)
+{
+  this.shotImg = new Image()
+  this.shotImg.src = imageSrc
+  this.shotImg.onload = loaded
+  
+  this.shots = []
+}
+
+ShotManager.prototype.sendShot = function(initialPosition, angle, speed, fn)
+{
+  this.shots.push({ x: initialPosition.x,
+                    y: initialPosition.y,
+                    speedX: Math.cos(angle) * speed,
+                    speedY: -Math.sin(angle) * speed,
+                    action: fn })
+}
+
+ShotManager.prototype.update = function()
+{
+  this.shots.forEach((obj, i, arr) =>
+  {
+    if (obj.y > baseScreen.height)
+    {
+      arr.splice(i, 1)
+      return
+    }  
+    
+    arr[i].x += obj.speedX
+    arr[i].y += obj.speedY
+  })
+}
+
+ShotManager.prototype.render = function()
+{
+  this.shots.forEach(obj => x.drawImage(this.shotImg, obj.x * ratios.W_RATIO, obj.y * ratios.H_RATIO, this.shotImg.width * ratios.W_RATIO, this.shotImg.height * ratios.H_RATIO))
+}
