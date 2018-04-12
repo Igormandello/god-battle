@@ -1,24 +1,3 @@
-var Direction = { LEFT: -1, RIGHT: 1 },
-    ratios = { W_RATIO: 1, H_RATIO: 1 },
-    baseScreen = { width: 1920, height: 1080 },
-    characterProps = { width: 46, height: 79, speed: 7 };
-
-var c, x;
-
-function getClippedRegion(image, x, y, width, height)
-{
-  var canvas = document.createElement('canvas'),
-      ctx = canvas.getContext('2d');
-
-  canvas.width = width;
-  canvas.height = height;
-
-  //                   source region         dest. region
-  ctx.drawImage(image, x, y, width, height,  0, 0, width, height);
-  
-  return canvas;
-}
-
 (function()
 {
   var playerMoving = 0, godMoving = 0;
@@ -35,50 +14,7 @@ function getClippedRegion(image, x, y, width, height)
     ratios.W_RATIO = document.body.clientWidth  / baseScreen.width
     ratios.H_RATIO = document.body.clientHeight / baseScreen.height
 
-    let toLoad = 4
-    
-    let scenario =
-    [
-      {
-        x: 300,
-        y: 200,
-        visible: true,
-        src: './imgs/cloud.png'
-      },
-      {
-        x: 0,
-        y: 792,
-        visible: true,
-        src: './imgs/ground.png'
-      }
-    ]
-    
-    let interactable =
-    [
-      {
-        x: 1550,
-        y: 820,
-        visible: true,
-        action: Actions.pentagram,
-        src: './imgs/pentagram.png'
-      },
-    ]
-    
-    scene  = new Scene('./imgs/background.png', scenario, interactable, resourceLoaded)
-    shotManager = new ShotManager('./imgs/lightning.png', resourceLoaded) 
-    
-    god    = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/god.png', resourceLoaded)
-    god.limits = { min: 300, max: baseScreen.width - 300 }
-    
-    player = new Character(960 - characterProps.width, 920 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/player.png', resourceLoaded)
-    
-    function resourceLoaded()
-    {
-      toLoad--
-      
-      if (!toLoad)
-        requestAnimationFrame(frame)
-    }
+    start()
   }
   
   window.onresize = () =>
@@ -114,9 +50,61 @@ function getClippedRegion(image, x, y, width, height)
     }
   }
   
+  function start()
+  {
+    let toLoad = 4
+    
+    let scenario =
+    [
+      {
+        x: 300,
+        y: 200,
+        visible: true,
+        src: './imgs/cloud.png'
+      },
+      {
+        x: 0,
+        y: 792,
+        visible: true,
+        src: './imgs/ground.png'
+      }
+    ]
+    
+    let interactable =
+    [
+      {
+        x: 1550,
+        y: 820,
+        visible: true,
+        action: Actions.pentagram,
+        src: './imgs/pentagram.png'
+      },
+    ]
+    
+    scene  = new Scene('./imgs/background.png', scenario, interactable, resourceLoaded)
+    shotManager = new ShotManager('./imgs/lightning.png', resourceLoaded) 
+    
+    god    = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/god.png', resourceLoaded)
+    god.limits = { min: 300, max: baseScreen.width - 300 }
+    
+    player = new Character(960 - characterProps.width, baseScreen.ground - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/player.png', resourceLoaded)
+    
+    function resourceLoaded()
+    {
+      toLoad--
+      
+      if (!toLoad)
+        requestAnimationFrame(frame)
+    }
+  }
+  
   function frame()
   {
-    shotManager.update()
+    if (!shotManager.update(player))
+    {
+      start()
+      return
+    }
     
     scene.render()
     player.render()

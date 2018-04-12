@@ -16,19 +16,25 @@ ShotManager.prototype.sendShot = function(initialPosition, angle, speed, fn)
                     action: fn })
 }
 
-ShotManager.prototype.update = function()
+ShotManager.prototype.update = function(character)
 {
+  let hit = false
   this.shots.forEach((obj, i, arr) =>
   {
-    if (obj.y > baseScreen.height)
+    if (obj.y + this.shotImg.height >= baseScreen.ground)
     {
       arr.splice(i, 1)
       return
     }  
     
+    if (intersects({ x: obj.x, y: obj.y, width: this.shotImg.width, height: this.shotImg.height }, character))
+      hit = true
+      
     arr[i].x += obj.speedX
     arr[i].y += obj.speedY
   })
+  
+  return !hit
 }
 
 ShotManager.prototype.render = function()
