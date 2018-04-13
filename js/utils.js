@@ -1,7 +1,7 @@
 var Direction = { LEFT: -1, RIGHT: 1 },
     ratios = { W_RATIO: 1, H_RATIO: 1 },
     baseScreen = { width: 1920, height: 1080, ground: 920 },
-    characterProps = { width: 46, height: 79, speed: 7 };
+    characterProps = { width: 48, height: 79, speed: 7 };
 
 var c, x;
 

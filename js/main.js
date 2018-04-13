@@ -30,7 +30,7 @@
   {
     switch (e.keyCode)
     {
-      case 32: shotManager.sendShot({ x: god.x, y: god.y }, 3 / 2 * Math.PI, 7); break
+      case 32: shotManager.sendShot({ x: god.x + 5, y: god.y + 20 }, 3 / 2 * Math.PI, 7); break
       case 37: player.startMoving(Direction.LEFT); break
       case 39: player.startMoving(Direction.RIGHT); break
       case 65: god.startMoving(Direction.LEFT); break
@@ -109,8 +109,8 @@
     scene.render()
     player.render()
     god.render()
-    shotManager.render()
     scene.renderScenarioObject(0)
+    shotManager.render()
     
     requestAnimationFrame(frame)
   }
