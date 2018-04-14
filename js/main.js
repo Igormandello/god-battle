@@ -73,11 +73,35 @@
     let interactable =
     [
       {
+        key: "goat",
+        x: 100,
+        y: 835,
+        visible: true,
+        action: Actions.goat,
+        src: './imgs/goat.png'
+      },
+      {
+        key: "deadGoat",
+        x: 100,
+        y: 835,
+        visible: false,
+        //action: Actions.pentagram,
+        src: './imgs/deadGoat.png'
+      },
+      {
+        key: "pentagram",
         x: 1550,
         y: 820,
         visible: true,
         action: Actions.pentagram,
         src: './imgs/pentagram.png'
+      },
+      {
+        key: "bloodyPentagram",
+        x: 1550,
+        y: 820,
+        visible: false,
+        src: './imgs/bloodyPentagram.png'
       },
     ]
     
@@ -117,9 +141,16 @@
   
   var Actions =
   {
+    goat: function()
+    {
+      scene.toggleInteractableObjectVisibility("goat")
+      scene.toggleInteractableObjectVisibility("deadGoat")
+    },
+    
     pentagram: function()
     {
-      scene.toggleInteractableObjectVisibility(0)
+      scene.toggleInteractableObjectVisibility("pentagram")
+      scene.toggleInteractableObjectVisibility("bloodyPentagram")
       scene.changeBackground('./imgs/bloodyBackground.png')
     }
   }

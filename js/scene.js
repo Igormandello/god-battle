@@ -22,7 +22,7 @@ function Scene(backgroundSrc, scenario, objects, loaded)
     tempImg.src = obj.src
     tempImg.onload = imageLoaded
     
-    elements.push({ x: obj.x, y: obj.y, action: obj.action, visible: obj.visible, img: tempImg })
+    elements.push({ key: obj.key, x: obj.x, y: obj.y, action: obj.action, visible: obj.visible, img: tempImg })
   })
   this.objects = elements
   
@@ -74,12 +74,18 @@ Scene.prototype.renderInteractableObject = function(i)
       x.drawImage(obj.img, obj.x * ratios.W_RATIO, obj.y * ratios.H_RATIO, obj.img.width * ratios.W_RATIO, obj.img.height * ratios.H_RATIO)
 }
 
-Scene.prototype.toggleInteractableObjectVisibility = function(i)
+Scene.prototype.toggleInteractableObjectVisibility = function(key)
 {
-  let obj = this.objects[i]
+  let obj = -1
   
-  if (obj)
-    obj.visible = !obj.visible;
+  this.objects.forEach((o, i, arr) =>
+  {
+    if (o.key == key)
+      obj = i
+  })
+  
+  if (obj > -1)
+    this.objects[obj].visible = !this.objects[obj].visible;
 }
 
 Scene.prototype.changeBackground = function(src, loaded)
@@ -93,9 +99,15 @@ Scene.prototype.changeBackground = function(src, loaded)
 
 Scene.prototype.interact = function(pos)
 {
-  this.objects.forEach((obj) => 
+  this.objects.some(obj => 
   {
-    if (!(pos.x < obj.x || pos.y < obj.y || pos.y + pos.height > obj.y + obj.img.height || pos.x + pos.width > obj.x + obj.img.width))
-      obj.action();
+    obj.width  = obj.img.width
+    obj.height = obj.img.height
+    
+    if (obj.visible && intersects(pos, obj) && obj.action)
+    {
+      obj.action()
+      return true
+    }
   })
 }
