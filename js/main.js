@@ -1,7 +1,7 @@
 (function()
 {
   var playerMoving = 0, godMoving = 0;
-  var player, god, scene, shotManager;
+  var player, god, scene, shotManager, inventory;
 
   window.onload = () =>
   {
@@ -52,7 +52,7 @@
   
   function start()
   {
-    let toLoad = 4
+    let toLoad = 5
     
     let scenario =
     [
@@ -60,13 +60,13 @@
         x: 300,
         y: 200,
         visible: true,
-        src: './imgs/cloud.png'
+        src: './imgs/scene/cloud.png'
       },
       {
         x: 0,
         y: 792,
         visible: true,
-        src: './imgs/ground.png'
+        src: './imgs/scene/ground.png'
       }
     ]
     
@@ -78,15 +78,15 @@
         y: 835,
         visible: true,
         action: Actions.goat,
-        src: './imgs/goat.png'
+        src: './imgs/scene/goat.png'
       },
       {
         key: "deadGoat",
         x: 100,
         y: 835,
         visible: false,
-        //action: Actions.pentagram,
-        src: './imgs/deadGoat.png'
+        action: Actions.deadGoat,
+        src: './imgs/scene/deadGoat.png'
       },
       {
         key: "pentagram",
@@ -94,25 +94,34 @@
         y: 820,
         visible: true,
         action: Actions.pentagram,
-        src: './imgs/pentagram.png'
+        src: './imgs/scene/pentagram.png'
       },
       {
         key: "bloodyPentagram",
         x: 1550,
         y: 820,
         visible: false,
-        src: './imgs/bloodyPentagram.png'
+        src: './imgs/scene/bloodyPentagram.png'
       },
     ]
+
+    let items =
+    [
+      {
+        key: "bucket",
+        src: "./imgs/items/bloodBucket.png"
+      }
+    ]
     
-    scene  = new Scene('./imgs/background.png', scenario, interactable, resourceLoaded)
-    shotManager = new ShotManager('./imgs/lightning.png', resourceLoaded) 
+    scene       = new Scene('./imgs/scene/background.png', scenario, interactable, resourceLoaded)
+    shotManager = new ShotManager('./imgs/scene/lightning.png', resourceLoaded) 
     
-    god    = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/god.png', resourceLoaded)
-    god.limits = { min: 300, max: baseScreen.width - 300 }
+    god         = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/characters/god.png', resourceLoaded)
+    god.limits  = { min: 300, max: baseScreen.width - 300 }
     
-    player = new Character(960 - characterProps.width, baseScreen.ground - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/player.png', resourceLoaded)
-    
+    player      = new Character(960 - characterProps.width, baseScreen.ground - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/characters/player.png', resourceLoaded)
+    inventory   = new Inventory(5, items, resourceLoaded) 
+
     function resourceLoaded()
     {
       toLoad--
@@ -135,6 +144,7 @@
     god.render()
     scene.renderScenarioObject(0)
     shotManager.render()
+    inventory.render()
     
     requestAnimationFrame(frame)
   }
@@ -146,12 +156,17 @@
       scene.toggleInteractableObjectVisibility("goat")
       scene.toggleInteractableObjectVisibility("deadGoat")
     },
+
+    deadGoat: function()
+    {
+      inventory.addItem("bucket")
+    },
     
     pentagram: function()
     {
       scene.toggleInteractableObjectVisibility("pentagram")
       scene.toggleInteractableObjectVisibility("bloodyPentagram")
-      scene.changeBackground('./imgs/bloodyBackground.png')
+      scene.changeBackground('./imgs/scene/bloodyBackground.png')
     }
   }
 })();
