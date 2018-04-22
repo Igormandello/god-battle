@@ -29,6 +29,7 @@ function Scene(backgroundSrc, scenario, objects, loaded) {
       x: obj.x,
       y: obj.y,
       action: obj.action,
+      maxActions: obj.maxActions,
       visible: obj.visible,
       img: tempImg
     })
@@ -104,8 +105,10 @@ Scene.prototype.interact = function(pos) {
     obj.width = obj.img.width
     obj.height = obj.img.height
 
-    if (obj.visible && intersects(pos, obj) && obj.action) {
-      obj.action()
+    if (obj.visible && intersects(pos, obj) && obj.action && (obj.maxActions === undefined || obj.maxActions > 0)) {
+      if (obj.action() && obj.maxActions)
+        obj.maxActions--
+      
       return true
     }
   })

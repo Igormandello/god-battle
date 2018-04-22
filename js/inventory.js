@@ -34,9 +34,9 @@ Inventory.prototype.addItem = function(key) {
   return true
 }
 
-Inventory.prototype.removeItem = function(item) {
+Inventory.prototype.removeItem = function(key) {
   this.items.forEach((obj, i, arr) => {
-    if (obj.key == item.key)
+    if (obj.key == key)
       arr.splice(i, 1)
   })
 }

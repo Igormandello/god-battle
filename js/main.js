@@ -116,6 +116,7 @@
         y: 835,
         visible: false,
         action: Actions.deadGoat,
+        maxActions: 1,
         src: './imgs/scene/deadGoat.png'
       },
       {
@@ -195,16 +196,27 @@
     goat: function() {
       scene.toggleInteractableObjectVisibility("goat")
       scene.toggleInteractableObjectVisibility("deadGoat")
+
+      return true
     },
 
     deadGoat: function() {
       inventory.addItem("bucket")
+      
+      return true
     },
 
     pentagram: function() {
+      if (!inventory.hasItem("bucket"))
+        return false
+
+      inventory.removeItem("bucket")
+
       scene.toggleInteractableObjectVisibility("pentagram")
       scene.toggleInteractableObjectVisibility("bloodyPentagram")
       scene.changeBackground('./imgs/scene/bloodyBackground.png')
+
+      return true
     }
   }
 })();
