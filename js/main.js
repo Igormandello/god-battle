@@ -91,6 +91,12 @@
     let scenes = [{
       backgroundSrc: './imgs/scene/background.png',
       nextScene: 1,
+      entryPoints: {
+        1: {
+          player: baseScreen.width - characterProps.width - 1,
+          god: baseScreen.width - 300 - characterProps.width - 1
+        }
+      },
       limits: {
         god: {
           min: 300,
@@ -147,9 +153,16 @@
           src: './imgs/scene/bloodyPentagram.png'
         },
       ]
-    }, {
+    },
+    {
       backgroundSrc: './imgs/scene/background.png',
       previousScene: 0,
+      entryPoints: {
+        0: {
+          player: 1,
+          god: 1
+        }
+      },
       scenario: [
         {
           x: 300,
@@ -168,8 +181,7 @@
       ]
     }]
 
-    let items =
-    [
+    let items = [
       {
         key: "bucket",
         src: "./imgs/items/bloodBucket.png"
@@ -221,17 +233,11 @@
 
     if (transition) {
       let transitionResult = transition(currentTime)
-      if (transitionResult === false)
+      if (transitionResult === false) 
         transition = undefined
       else if (transitionResult !== true) {
-        let limits = scene.scenes[transitionResult.to].limits
-        if (transitionResult.from < transitionResult.to) {
-          player.x = limits.player.min + 1
-          god.x = limits.god.min + 1
-        } else {
-          player.x = limits.player.max - player.width - 1
-          god.x = limits.god.max - god.width - 1
-        }
+        player.x = transitionResult.entryPoint.player
+        god.x    = transitionResult.entryPoint.god
 
         transition = transitionResult.fadeOut
       }

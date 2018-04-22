@@ -57,9 +57,9 @@ Scene.prototype.update = function (god, player, delta, currentTime) {
 
   let dir = player.update(delta, actualScene.limits.player)
   if (dir > 0 && actualScene.nextScene !== undefined)
-    return this.changeScene(god, player, actualScene.nextScene, currentTime)
+    return this.changeScene(actualScene.nextScene, currentTime)
   else if (dir < 0 && actualScene.previousScene !== undefined)
-    return this.changeScene(god, player, actualScene.previousScene, currentTime)
+    return this.changeScene(actualScene.previousScene, currentTime)
 }
 
 Scene.prototype.render = function() {
@@ -136,7 +136,7 @@ Scene.prototype.interact = function(pos) {
   })
 }
 
-Scene.prototype.changeScene = function(god, player, destiny, startTime) {
+Scene.prototype.changeScene = function(destiny, startTime) {
   let ctx = this
 
   //Function to do the fadeout transition, returns if the transition is still running
@@ -166,7 +166,7 @@ Scene.prototype.changeScene = function(god, player, destiny, startTime) {
       ctx.actualScene = destiny
       startTime = actualTime
 
-      return { from: previous, to: destiny, fadeOut: fadeOut }
+      return { entryPoint: ctx.scenes[destiny].entryPoints[previous], fadeOut: fadeOut }
     }
 
     return true
