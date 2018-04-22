@@ -41,7 +41,10 @@ function Scene(scenes, loaded) {
     let background = new Image()
     background.src = scene.backgroundSrc
     background.onload = imageLoaded
-    tempScenes.push({ background: background, scenario: scenario, objects: objects })
+
+    let defaultLimits = { min: 0, max: baseScreen.width },
+        limits = Object.assign({ god: defaultLimits, player: defaultLimits }, scene.limits)
+    tempScenes.push({ background: background, scenario: scenario, objects: objects, limits: limits })
   })
   this.scenes = tempScenes
   this.actualScene = 0
@@ -52,6 +55,14 @@ function Scene(scenes, loaded) {
     if (toLoad == 0)
       loaded()
   }
+}
+
+Scene.prototype.update = function (god, player, delta, currentTime) {
+  god.update(delta, this.scenes[this.actualScene].limits.god)
+
+  let dir = player.update(delta, this.scenes[this.actualScene].limits.player)
+  if (dir != 0)
+    return this.changeScene(god, player, dir, currentTime)
 }
 
 Scene.prototype.render = function() {
@@ -128,7 +139,7 @@ Scene.prototype.interact = function(pos) {
   })
 }
 
-Scene.prototype.changeScene = function(direction, startTime) {
+Scene.prototype.changeScene = function(god, player, direction, startTime) {
   let ctx = this, toAdd = (direction > 0 ? 1 : -1), reverse = false
 
   //Function to do the transation, it must be called every frame by the main, 
@@ -145,6 +156,16 @@ Scene.prototype.changeScene = function(direction, startTime) {
 
     if (alpha >= 1 && !reverse) {
       ctx.actualScene += toAdd
+
+      let sceneLimits = ctx.scenes[ctx.actualScene].limits
+      if (toAdd === 1) {
+        god.x = sceneLimits.god.min + 1
+        player.x = sceneLimits.player.min + 1
+      } else {
+        god.x = sceneLimits.god.max - god.width - 1
+        player.x = sceneLimits.player.max - player.width - 1
+      }
+
       startTime = actualTime
       reverse = true
     } else if (alpha <= 0 && reverse)

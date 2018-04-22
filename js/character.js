@@ -47,11 +47,13 @@ function Character(cx, cy, cw, ch, speed, spritesheet, loaded) {
   this.lastDir = DIRECTION.left
 }
 
-Character.prototype.update = function(delta) {
-  this.move(delta)
+Character.prototype.update = function(delta, limits) {
+  let ret = this.move(delta, limits)
 
   if (Math.floor(this.frameCount / SPRITE_CHANGE) >= SPRITE_SEQUENCE[0].length)
     this.frameCount = 0
+
+  return ret
 }
 
 Character.prototype.render = function() {
@@ -68,20 +70,22 @@ Character.prototype.startMoving = function(dir) {
   this.moving = dir
 }
 
-Character.prototype.move = function(delta) {
+Character.prototype.move = function(delta, limits) {
   this.frameCount++
-    this.x += this.moving * this.speed * delta
+  this.x += this.moving * this.speed * delta
 
-  if (!this.limits) {
-    if (this.x < 0)
-      this.x = 0
-    else if (this.x + this.width > baseScreen.width)
-      this.x = baseScreen.width - this.width
-  } else
-  if (this.x < this.limits.min)
-    this.x = this.limits.min
-  else if (this.x + this.width > this.limits.max)
-    this.x = this.limits.max - this.width
+  // -1 = hit left limit
+  //  0 = no limit was hit
+  //  1 = hit right limit
+  if (this.x <= limits.min) {
+    this.x = limits.min + 1
+    return -1
+  } else if (this.x + this.width >= limits.max) {
+    this.x = limits.max - this.width - 1
+    return 1
+  }
+
+  return 0
 }
 
 Character.prototype.stopMoving = function(dir) {

@@ -26,7 +26,7 @@
   }
 
   window.onkeydown = (e) => {
-    //If there is a transation running, cancel all the action requests
+    //If there is a transition running, cancel all the action requests
     if (transition)
       return
 
@@ -90,6 +90,12 @@
 
     let scenes = [{
       backgroundSrc: './imgs/scene/background.png',
+      limits: {
+        god: {
+          min: 300,
+          max: baseScreen.width - 300
+        }
+      },
       scenario: [
         {
           x: 300,
@@ -172,10 +178,6 @@
     shotManager = new ShotManager('./imgs/scene/lightning.png', resourceLoaded)
 
     god = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/characters/god.png', resourceLoaded)
-    god.limits = {
-      min: 300,
-      max: baseScreen.width - 300
-    }
 
     player = new Character(960 - characterProps.width, baseScreen.ground - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/characters/player.png', resourceLoaded)
     inventory = new Inventory(5, items, resourceLoaded)
@@ -199,8 +201,7 @@
         return
       }
 
-      player.update(delta)
-      god.update(delta)
+      transition = scene.update(god, player, delta, currentTime)
     } else
       shotManager.clearShots()
 
@@ -242,8 +243,6 @@
 
       scene.toggleInteractiveObjectVisibility("bloodyPentagram")
       scene.changeBackground('./imgs/scene/bloodyBackground.png', 0)
-      
-      transition = scene.changeScene(1, currentTime)
 
       return true
     }
