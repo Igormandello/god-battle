@@ -107,6 +107,7 @@
           y: 835,
           visible: true,
           action: Actions.goat,
+          destroy: true,
           src: './imgs/scene/goat.png'
         },
         {
@@ -124,6 +125,7 @@
           y: 820,
           visible: true,
           action: Actions.pentagram,
+          destroy: true,
           src: './imgs/scene/pentagram.png'
         },
         {
@@ -166,7 +168,6 @@
 
   function frame(t) {
     let delta = (t - currentTime) / (1000 / 60)
-
     currentTime = t
 
     if (!shotManager.update(player, delta)) {
@@ -194,8 +195,7 @@
 
   var Actions = {
     goat: function() {
-      scene.toggleInteractableObjectVisibility("goat")
-      scene.toggleInteractableObjectVisibility("deadGoat")
+      scene.toggleInteractiveObjectVisibility("deadGoat")
 
       return true
     },
@@ -212,10 +212,9 @@
 
       inventory.removeItem("bucket")
 
-      scene.toggleInteractableObjectVisibility("pentagram")
-      scene.toggleInteractableObjectVisibility("bloodyPentagram")
+      scene.toggleInteractiveObjectVisibility("bloodyPentagram")
       scene.changeBackground('./imgs/scene/bloodyBackground.png', 0)
-
+      
       return true
     }
   }
