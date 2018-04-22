@@ -1,7 +1,9 @@
 (function()
 {
-  var playerMoving = 0, godMoving = 0;
-  var player, god, scene, shotManager, inventory;
+  var currentTime = 0
+
+  var playerMoving = 0, godMoving = 0
+  var player, god, scene, shotManager, inventory
 
   window.onload = () =>
   {
@@ -131,19 +133,31 @@
     }
   }
   
-  function frame()
+  function frame(t)
   {
-    if (!shotManager.update(player))
+    let delta = (t - currentTime) / (1000 / 60)
+
+    currentTime = t
+
+    if (!shotManager.update(player, delta))
     {
       start()
       return
     }
-    
+
     scene.render()
+    
+    player.update(delta)
     player.render()
+    
+    god.update(delta)
     god.render()
+
+    //The Object #0 is the cloud, and it must be above the characters
     scene.renderScenarioObject(0)
     shotManager.render()
+    
+    //Inventory is above all
     inventory.render()
     
     requestAnimationFrame(frame)
