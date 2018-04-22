@@ -84,57 +84,57 @@
   function start() {
     let toLoad = 5
 
-    let scenario =
-    [
-      {
-        x: 300,
-        y: 200,
-        visible: true,
-        src: './imgs/scene/cloud.png'
-      },
-      {
-        x: 0,
-        y: 792,
-        visible: true,
-        src: './imgs/scene/ground.png'
-      }
-    ]
-
-    let interactable =
-    [
-      {
-        key: "goat",
-        x: 100,
-        y: 835,
-        visible: true,
-        action: Actions.goat,
-        src: './imgs/scene/goat.png'
-      },
-      {
-        key: "deadGoat",
-        x: 100,
-        y: 835,
-        visible: false,
-        action: Actions.deadGoat,
-        maxActions: 1,
-        src: './imgs/scene/deadGoat.png'
-      },
-      {
-        key: "pentagram",
-        x: 1550,
-        y: 820,
-        visible: true,
-        action: Actions.pentagram,
-        src: './imgs/scene/pentagram.png'
-      },
-      {
-        key: "bloodyPentagram",
-        x: 1550,
-        y: 820,
-        visible: false,
-        src: './imgs/scene/bloodyPentagram.png'
-      },
-    ]
+    let scenes = [{
+      backgroundSrc: './imgs/scene/background.png',
+      scenario: [
+        {
+          x: 300,
+          y: 200,
+          visible: true,
+          src: './imgs/scene/cloud.png'
+        },
+        {
+          x: 0,
+          y: 792,
+          visible: true,
+          src: './imgs/scene/ground.png'
+        }
+      ],
+      objects: [
+        {
+          key: "goat",
+          x: 100,
+          y: 835,
+          visible: true,
+          action: Actions.goat,
+          src: './imgs/scene/goat.png'
+        },
+        {
+          key: "deadGoat",
+          x: 100,
+          y: 835,
+          visible: false,
+          action: Actions.deadGoat,
+          maxActions: 1,
+          src: './imgs/scene/deadGoat.png'
+        },
+        {
+          key: "pentagram",
+          x: 1550,
+          y: 820,
+          visible: true,
+          action: Actions.pentagram,
+          src: './imgs/scene/pentagram.png'
+        },
+        {
+          key: "bloodyPentagram",
+          x: 1550,
+          y: 820,
+          visible: false,
+          src: './imgs/scene/bloodyPentagram.png'
+        },
+      ]
+    }]
 
     let items =
     [
@@ -144,7 +144,7 @@
       }
     ]
 
-    scene = new Scene('./imgs/scene/background.png', scenario, interactable, resourceLoaded)
+    scene = new Scene(scenes, resourceLoaded)
     shotManager = new ShotManager('./imgs/scene/lightning.png', resourceLoaded)
 
     god = new Character(960 - characterProps.width, 210 - characterProps.height, characterProps.width, characterProps.height, characterProps.speed, './imgs/characters/god.png', resourceLoaded)
@@ -214,7 +214,7 @@
 
       scene.toggleInteractableObjectVisibility("pentagram")
       scene.toggleInteractableObjectVisibility("bloodyPentagram")
-      scene.changeBackground('./imgs/scene/bloodyBackground.png')
+      scene.changeBackground('./imgs/scene/bloodyBackground.png', 0)
 
       return true
     }
