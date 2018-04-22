@@ -1,5 +1,5 @@
 (function() {
-  var currentTime = 0, transition = undefined
+  var currentTime = 0, transition = undefined, inHell = false
 
   var playerMoving = 0, godMoving = 0
   var player, god, scene, shotManager, inventory
@@ -154,6 +154,9 @@
         },
       ]
     },
+    //////////////////////////////////////////////////
+    ////////           S C E N E  2           ////////
+    //////////////////////////////////////////////////
     {
       backgroundSrc: './imgs/scene/background.png',
       previousScene: 0,
@@ -161,6 +164,10 @@
         0: {
           player: 1,
           god: 301
+        },
+        2: {
+          player: 1200,
+          god: 960
         }
       },
       limits: {
@@ -192,7 +199,38 @@
           key: "ladder",
           x: 1200,
           y: 850,
+          visible: false,
+          action: Actions.ladder,
+          src: './imgs/scene/ladder.png'
+        }
+      ]
+    },
+    ///////////////////////////////////////////////////
+    ////////              H E L L              ////////
+    ///////////////////////////////////////////////////
+    {
+      backgroundSrc: './imgs/scene/fireBackground.png',
+      entryPoints: {
+        1: {
+          player: 1200,
+          god: 1
+        }
+      },
+      scenario: [
+        {
+          x: 0,
+          y: 792,
           visible: true,
+          src: './imgs/scene/fireGround.png'
+        }
+      ],
+      objects: [
+        {
+          key: "hellLadder",
+          x: 1200,
+          y: 850,
+          visible: true,
+          action: Actions.hellLadder,
           src: './imgs/scene/ladder.png'
         }
       ]
@@ -239,10 +277,12 @@
 
     scene.render()
     player.render()
-    god.render()
+
+    if (!inHell)
+      god.render()
 
     //The Object #0 is the cloud, and it must be above the characters
-    scene.renderScenarioObject(0)
+    //scene.renderScenarioObject(0)
     shotManager.render()
 
     //Inventory is above all
@@ -283,7 +323,24 @@
       inventory.removeItem("bucket")
 
       scene.toggleInteractiveObjectVisibility("bloodyPentagram")
+      scene.toggleInteractiveObjectVisibility("ladder", 1)
+
       scene.changeBackground('./imgs/scene/bloodyBackground.png', 0)
+      scene.changeBackground('./imgs/scene/bloodyBackground.png', 1)
+
+      return true
+    },
+
+    ladder: function() {
+      transition = scene.changeScene(2, currentTime)
+      inHell = true
+
+      return true
+    },
+
+    hellLadder: function() {
+      transition = scene.changeScene(1, currentTime)
+      inHell = false
 
       return true
     }
