@@ -106,8 +106,11 @@ Scene.prototype.changeBackground = function(src, scene, loaded) {
 }
 
 Scene.prototype.interact = function(pos) {
+  //Saves the actual scene # to prevent scene transation's problems in obj.action()
+  let actualScene = this.actualScene
+
   //Searches among all the objects in the actual scene which is intersecting the pos given and is visible 
-  this.scenes[this.actualScene].objects.some((obj, i) => {
+  this.scenes[actualScene].objects.some((obj, i) => {
     obj.width = obj.img.width
     obj.height = obj.img.height
 
@@ -118,13 +121,35 @@ Scene.prototype.interact = function(pos) {
 
         //If maxActions is undefined or equals to 0 and the object has the property destroy equals to true, the visibillity is toggled
         if (!obj.maxActions && obj.destroy)
-            this.scenes[this.actualScene].objects[i].visible = !this.scenes[this.actualScene].objects[i].visible;
+            this.scenes[actualScene].objects[i].visible = !this.scenes[actualScene].objects[i].visible;
       }
       return true
     }
   })
 }
 
-Scene.prototype.changeScene = function(direction) {
-  this.actualScene += (direction > 0 ? 1 : -1)
+Scene.prototype.changeScene = function(direction, startTime) {
+  let ctx = this, toAdd = (direction > 0 ? 1 : -1), reverse = false
+
+  //Function to do the transation, it must be called every frame by the main, 
+  //the return true represents that the transation keeps going, false represents that it still isn't finished
+  return (actualTime) => {
+    let alpha = (actualTime - startTime) / transitionTime
+    if (reverse)
+      alpha = 1 - alpha
+
+    console.log(actualTime + " " + startTime + " " + alpha)
+
+    x.fillStyle = "rgba(0, 0, 0, " + alpha + ")"
+    x.fillRect(0, 0, c.width, c.height)
+
+    if (alpha >= 1 && !reverse) {
+      ctx.actualScene += toAdd
+      startTime = actualTime
+      reverse = true
+    } else if (alpha <= 0 && reverse)
+      return false
+
+    return true
+  }
 }

@@ -16,6 +16,10 @@ ShotManager.prototype.sendShot = function(initialPosition, angle, speed, fn) {
   })
 }
 
+ShotManager.prototype.clearShots = function() {
+  this.shots = []
+}
+
 ShotManager.prototype.update = function(character, delta) {
   let hit = false
   this.shots.forEach((obj, i, arr) => {

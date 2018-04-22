@@ -1,5 +1,5 @@
 (function() {
-  var currentTime = 0
+  var currentTime = 0, transition = undefined
 
   var playerMoving = 0, godMoving = 0
   var player, god, scene, shotManager, inventory
@@ -26,6 +26,10 @@
   }
 
   window.onkeydown = (e) => {
+    //If there is a transation running, cancel all the action requests
+    if (transition)
+      return
+
     switch (e.keyCode) {
       case 32:
         shotManager.sendShot({
@@ -136,6 +140,24 @@
           src: './imgs/scene/bloodyPentagram.png'
         },
       ]
+    }, {
+      backgroundSrc: './imgs/scene/background.png',
+      scenario: [
+        {
+          x: 300,
+          y: 200,
+          visible: true,
+          src: './imgs/scene/cloud.png'
+        },
+        {
+          x: 0,
+          y: 792,
+          visible: true,
+          src: './imgs/scene/ground.png'
+        }
+      ],
+      objects: [
+      ]
     }]
 
     let items =
@@ -170,17 +192,20 @@
     let delta = (t - currentTime) / (1000 / 60)
     currentTime = t
 
-    if (!shotManager.update(player, delta)) {
-      start()
-      return
-    }
+    //Characters and shots can't move in a transition
+    if (!transition) {
+      if (!shotManager.update(player, delta)) {
+        start()
+        return
+      }
+
+      player.update(delta)
+      god.update(delta)
+    } else
+      shotManager.clearShots()
 
     scene.render()
-
-    player.update(delta)
     player.render()
-
-    god.update(delta)
     god.render()
 
     //The Object #0 is the cloud, and it must be above the characters
@@ -189,6 +214,9 @@
 
     //Inventory is above all
     inventory.render()
+
+    if (transition && !transition(currentTime))
+      transition = undefined
 
     requestAnimationFrame(frame)
   }
@@ -215,6 +243,8 @@
       scene.toggleInteractiveObjectVisibility("bloodyPentagram")
       scene.changeBackground('./imgs/scene/bloodyBackground.png', 0)
       
+      transition = scene.changeScene(1, currentTime)
+
       return true
     }
   }

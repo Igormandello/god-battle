@@ -17,6 +17,8 @@ var Direction = {
     speed: 7
   };
 
+var transitionTime = 1000;
+
 var c, x;
 
 function getClippedRegion(image, x, y, width, height) {
