@@ -90,6 +90,7 @@
 
     let scenes = [{
       backgroundSrc: './imgs/scene/background.png',
+      nextScene: 1,
       limits: {
         god: {
           min: 300,
@@ -148,6 +149,7 @@
       ]
     }, {
       backgroundSrc: './imgs/scene/background.png',
+      previousScene: 0,
       scenario: [
         {
           x: 300,
@@ -202,8 +204,9 @@
       }
 
       transition = scene.update(god, player, delta, currentTime)
-    } else
-      shotManager.clearShots()
+      if (transition)
+        shotManager.clearShots()
+    }
 
     scene.render()
     player.render()
@@ -216,8 +219,23 @@
     //Inventory is above all
     inventory.render()
 
-    if (transition && !transition(currentTime))
-      transition = undefined
+    if (transition) {
+      let transitionResult = transition(currentTime)
+      if (transitionResult === false)
+        transition = undefined
+      else if (transitionResult !== true) {
+        let limits = scene.scenes[transitionResult.to].limits
+        if (transitionResult.from < transitionResult.to) {
+          player.x = limits.player.min + 1
+          god.x = limits.god.min + 1
+        } else {
+          player.x = limits.player.max - player.width - 1
+          god.x = limits.god.max - god.width - 1
+        }
+
+        transition = transitionResult.fadeOut
+      }
+    }
 
     requestAnimationFrame(frame)
   }

@@ -7,44 +7,38 @@ function Scene(scenes, loaded) {
     toLoad += 1 + scene.scenario.length + scene.objects.length
 
     let scenario = []
-    scene.scenario.forEach((obj, i, arr) => {
-      let tempImg = new Image()
-      tempImg.src = obj.src
-      tempImg.onload = imageLoaded
+    scene.scenario.forEach(obj => {
+      let tempObj = {
+        img: new Image()
+      }
+      tempObj.img.src = obj.src
+      tempObj.img.onload = imageLoaded
+      delete obj.src
 
-      scenario.push({
-        x: obj.x,
-        y: obj.y,
-        visible: obj.visible,
-        img: tempImg
-      })
+      scenario.push(Object.assign(obj, tempObj))
     })
 
     let objects = []
-    scene.objects.forEach((obj, i, arr) => {
-      let tempImg = new Image()
-      tempImg.src = obj.src
-      tempImg.onload = imageLoaded
+    scene.objects.forEach(obj => {
+      let tempObj = {
+        img: new Image()
+      }
+      tempObj.img.src = obj.src
+      tempObj.img.onload = imageLoaded
+      delete obj.src
 
-      objects.push({
-        key: obj.key,
-        x: obj.x,
-        y: obj.y,
-        action: obj.action,
-        maxActions: obj.maxActions,
-        destroy: obj.destroy,
-        visible: obj.visible,
-        img: tempImg
-      })
+      objects.push(Object.assign(obj, tempObj))
     })
 
     let background = new Image()
     background.src = scene.backgroundSrc
     background.onload = imageLoaded
+    delete scene.backgroundSrc
 
     let defaultLimits = { min: 0, max: baseScreen.width },
         limits = Object.assign({ god: defaultLimits, player: defaultLimits }, scene.limits)
-    tempScenes.push({ background: background, scenario: scenario, objects: objects, limits: limits })
+
+    tempScenes.push(Object.assign(scene, { background: background, scenario: scenario, objects: objects, limits: limits }))
   })
   this.scenes = tempScenes
   this.actualScene = 0
@@ -58,11 +52,14 @@ function Scene(scenes, loaded) {
 }
 
 Scene.prototype.update = function (god, player, delta, currentTime) {
-  god.update(delta, this.scenes[this.actualScene].limits.god)
+  let actualScene = this.scenes[this.actualScene]
+  god.update(delta, actualScene.limits.god)
 
-  let dir = player.update(delta, this.scenes[this.actualScene].limits.player)
-  if (dir != 0)
-    return this.changeScene(god, player, dir, currentTime)
+  let dir = player.update(delta, actualScene.limits.player)
+  if (dir > 0 && actualScene.nextScene !== undefined)
+    return this.changeScene(god, player, actualScene.nextScene, currentTime)
+  else if (dir < 0 && actualScene.previousScene !== undefined)
+    return this.changeScene(god, player, actualScene.previousScene, currentTime)
 }
 
 Scene.prototype.render = function() {
@@ -139,38 +136,41 @@ Scene.prototype.interact = function(pos) {
   })
 }
 
-Scene.prototype.changeScene = function(god, player, direction, startTime) {
-  let ctx = this, toAdd = (direction > 0 ? 1 : -1), reverse = false
+Scene.prototype.changeScene = function(god, player, destiny, startTime) {
+  let ctx = this
 
-  //Function to do the transation, it must be called every frame by the main, 
-  //the return true represents that the transation keeps going, false represents that it still isn't finished
-  return (actualTime) => {
-    let alpha = (actualTime - startTime) / transitionTime
-    if (reverse)
-      alpha = 1 - alpha
-
-    console.log(actualTime + " " + startTime + " " + alpha)
+  //Function to do the fadeout transition, returns if the transition is still running
+  let fadeOut = (actualTime) => {
+    let alpha = 1 - (actualTime - startTime) / transitionTime
 
     x.fillStyle = "rgba(0, 0, 0, " + alpha + ")"
     x.fillRect(0, 0, c.width, c.height)
 
-    if (alpha >= 1 && !reverse) {
-      ctx.actualScene += toAdd
-
-      let sceneLimits = ctx.scenes[ctx.actualScene].limits
-      if (toAdd === 1) {
-        god.x = sceneLimits.god.min + 1
-        player.x = sceneLimits.player.min + 1
-      } else {
-        god.x = sceneLimits.god.max - god.width - 1
-        player.x = sceneLimits.player.max - player.width - 1
-      }
-
-      startTime = actualTime
-      reverse = true
-    } else if (alpha <= 0 && reverse)
+    if (alpha <= 0)
       return false
 
     return true
   }
+
+  //Function to do the transation, it must be called every frame by the main, 
+  //the return true represents that the transation keeps going, when the fadeIn is completed, it returns a object
+  //this objects contains the preivous scene, the actual scene and the fade out function
+  let fadeIn = (actualTime) => {
+    let alpha = (actualTime - startTime) / transitionTime
+
+    x.fillStyle = "rgba(0, 0, 0, " + alpha + ")"
+    x.fillRect(0, 0, c.width, c.height)
+
+    if (alpha >= 1) {
+      let previous = ctx.actualScene
+      ctx.actualScene = destiny
+      startTime = actualTime
+
+      return { from: previous, to: destiny, fadeOut: fadeOut }
+    }
+
+    return true
+  }
+
+  return fadeIn
 }
