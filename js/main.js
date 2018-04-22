@@ -160,7 +160,17 @@
       entryPoints: {
         0: {
           player: 1,
-          god: 1
+          god: 301
+        }
+      },
+      limits: {
+        god: {
+          min: 300,
+          max: baseScreen.width - 300
+        },
+        player: {
+          min: 0,
+          max: 1200 + 100
         }
       },
       scenario: [
@@ -178,6 +188,13 @@
         }
       ],
       objects: [
+        {
+          key: "ladder",
+          x: 1200,
+          y: 850,
+          visible: true,
+          src: './imgs/scene/ladder.png'
+        }
       ]
     }]
 

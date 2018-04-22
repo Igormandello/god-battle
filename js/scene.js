@@ -83,11 +83,13 @@ Scene.prototype.renderScenarioObject = function(i) {
       x.drawImage(obj.img, obj.x * ratios.W_RATIO, obj.y * ratios.H_RATIO, obj.img.width * ratios.W_RATIO, obj.img.height * ratios.H_RATIO)
 }
 
-Scene.prototype.toggleScenarioObjectVisibility = function(i) {
-  let obj = this.scenes[this.actualScene].scenario[i]
+Scene.prototype.toggleScenarioObjectVisibility = function(i, scene) {
+  if (scene === undefined)
+    scene = this.actualScene
 
+  let obj = this.scenes[scene].scenario[i]
   if (obj)
-    this.scenes[this.actualScene].scenario[i].visible = !this.scenes[this.actualScene].scenario[i].visible;
+    this.scenes[scene].scenario[i].visible = !this.scenes[scene].scenario[i].visible;
 }
 
 Scene.prototype.renderInteractiveObject = function(i) {
@@ -98,11 +100,13 @@ Scene.prototype.renderInteractiveObject = function(i) {
       x.drawImage(obj.img, obj.x * ratios.W_RATIO, obj.y * ratios.H_RATIO, obj.img.width * ratios.W_RATIO, obj.img.height * ratios.H_RATIO)
 }
 
-Scene.prototype.toggleInteractiveObjectVisibility = function(key) {
-  let obj = this.scenes[this.actualScene].objects.findIndex((o) => o.key == key)
+Scene.prototype.toggleInteractiveObjectVisibility = function(key, scene) {
+  if (scene === undefined)
+    scene = this.actualScene
 
+  let obj = this.scenes[scene].objects.findIndex((o) => o.key == key)
   if (obj > -1)
-    this.scenes[this.actualScene].objects[obj].visible = !this.scenes[this.actualScene].objects[obj].visible;
+    this.scenes[scene].objects[obj].visible = !this.scenes[scene].objects[obj].visible;
 }
 
 Scene.prototype.changeBackground = function(src, scene, loaded) {
